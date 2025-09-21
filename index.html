@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seven Knight Hero Filter</title>
+    <title>Klasifikasi Hero Seven Knight</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,18 +33,6 @@
         .button.active {
             @apply ring-4 ring-offset-2 ring-offset-gray-900;
         }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body class="p-4 sm:p-8 flex flex-col items-center min-h-screen">
@@ -55,8 +43,6 @@
         <header class="text-center mb-8">
             <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-white">Klasifikasi Hero Seven Knight</h1>
             <p class="text-sm sm:text-base text-gray-400">Temukan pahlawan berdasarkan tingkat kepentingan dan kategori mereka.</p>
-            <div id="userIdDisplay" class="text-xs text-gray-500 mt-2"></div>
-            <button id="edit-btn" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Edit Klasifikasi</button>
         </header>
 
         <!-- Main View -->
@@ -85,43 +71,15 @@
                 <!-- Hero cards will be dynamically inserted here -->
             </div>
         </div>
-
-        <!-- Edit View -->
-        <div id="edit-view" class="hidden">
-            <h2 class="text-2xl font-bold mb-4 text-white">Edit Klasifikasi Hero</h2>
-            <div id="edit-list" class="grid grid-cols-1 gap-6">
-                <!-- Editable hero cards will be dynamically inserted here -->
-            </div>
-            <div class="flex justify-center mt-8 gap-4">
-                <button id="update-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500">Update & Simpan</button>
-                <button id="cancel-edit-btn" class="px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Batal</button>
-            </div>
-        </div>
     </div>
-
-    <!-- Password Modal -->
-    <div id="password-modal" class="modal-overlay hidden">
-        <div class="bg-gray-800 p-8 rounded-lg shadow-xl text-center">
-            <h3 class="text-xl font-bold mb-4 text-white">Masukkan Kata Sandi</h3>
-            <input type="password" id="password-input" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kata Sandi">
-            <p id="password-error-message" class="text-red-500 hidden mb-4 text-sm">Kata sandi salah!</p>
-            <div class="flex justify-center gap-4">
-                <button id="submit-password-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Submit</button>
-                <button id="cancel-password-btn" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">Batal</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- JavaScript for Filtering and Editing Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, setDoc, getDoc, getDocs, runTransaction, query, where, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        setLogLevel('debug');
-        
-        // Data pahlawan awal jika database kosong
-        const initialHeroes = [
+    
+    <!-- JavaScript untuk logika aplikasi -->
+    <script>
+        // Data pahlawan yang disimpan di dalam file HTML
+        // Anda bisa mengedit, menambahkan, atau menghapus hero di sini
+        let heroes = [
+            // Format data:
+            // { name: 'Nama Hero', categories: ['Kategori 1', 'Kategori 2'], importance: ['Tingkat Kepentingan'] },
             { name: 'Leo', categories: ['DG', 'CR'], importance: ['⭐'] },
             { name: 'Black rose', categories: ['Raid'], importance: ['⭐'] },
             { name: 'Rei', categories: ['DG'], importance: ['⭐'] },
@@ -163,7 +121,7 @@
             { name: 'Yeonhee', categories: ['CR', 'pvp', 'DG'], importance: ['⭐'] },
             { name: 'Jave', categories: ['Adv', 'DG', 'pvp'], importance: ['⭐'] },
             { name: 'Spike', categories: ['DG', 'pvp'], importance: ['⭐'] },
-            { name: 'Rudy', categories: ['Pvp'], importance: ['⭐'] },
+            { name: 'Rudy', categories: ['pvp'], importance: ['⭐'] },
             { name: 'Ace', categories: ['All content'], importance: ['⭐'] },
             { name: 'Vanessa', categories: ['All content'], importance: ['🍁'] },
             { name: 'Kriss', categories: ['pvp'], importance: ['⭐'] },
@@ -199,47 +157,16 @@
             { name: 'Rosie', categories: [], importance: ['🔥'] },
             { name: 'Juri', categories: [], importance: ['🔥'] },
         ];
-
-        // Inisialisasi Firebase
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let userId = null;
-        let heroes = [];
+        
+        // Mendapatkan elemen DOM
+        const heroListContainer = document.getElementById('hero-list');
+        const importanceFilters = document.getElementById('importance-filters');
+        const categoryFilters = document.getElementById('category-filters');
         let currentImportanceFilter = null;
         let currentCategoryFilter = null;
 
-        // Kata sandi untuk mode edit
-        const SECRET_PASSWORD = '7knight';
-
-        const mainView = document.getElementById('main-view');
-        const editView = document.getElementById('edit-view');
-        const heroListContainer = document.getElementById('hero-list');
-        const editListContainer = document.getElementById('edit-list');
-        const userIdDisplay = document.getElementById('userIdDisplay');
-        const passwordModal = document.getElementById('password-modal');
-        const passwordInput = document.getElementById('password-input');
-        const passwordErrorMessage = document.getElementById('password-error-message');
-        const submitPasswordBtn = document.getElementById('submit-password-btn');
-        const cancelPasswordBtn = document.getElementById('cancel-password-btn');
-
-        // Fungsi untuk beralih antara tampilan
-        function switchView(view) {
-            if (view === 'main') {
-                mainView.classList.remove('hidden');
-                editView.classList.add('hidden');
-            } else {
-                mainView.classList.add('hidden');
-                editView.classList.remove('hidden');
-                renderEditList();
-            }
-        }
-
-        // Fungsi untuk merender daftar hero di tampilan utama
-        function renderMainList() {
+        // Fungsi untuk merender daftar hero
+        function renderHeroList() {
             heroListContainer.innerHTML = '';
             const filteredHeroes = heroes.filter(hero => {
                 const isImportanceMatch = currentImportanceFilter === null || hero.importance.includes(currentImportanceFilter);
@@ -251,11 +178,8 @@
                 heroListContainer.innerHTML = `<p class="text-center text-gray-500 col-span-full mt-8">Tidak ada pahlawan yang ditemukan.</p>`;
             } else {
                 filteredHeroes.forEach(hero => {
-                    const cardContainer = document.createElement('div');
-                    cardContainer.classList.add('hero-card-container');
-                    
                     const card = document.createElement('div');
-                    card.classList.add('hero-card', 'bg-gray-800', 'p-6', 'rounded-xl', 'shadow-lg', 'border', 'border-gray-700');
+                    card.classList.add('bg-gray-800', 'p-6', 'rounded-xl', 'shadow-lg', 'border', 'border-gray-700', 'transition-transform', 'transform', 'hover:scale-105');
 
                     const importanceIcons = hero.importance.join(' ');
                     const categories = hero.categories.length > 0 ? hero.categories.join(', ') : 'Tidak ada kategori';
@@ -267,121 +191,13 @@
                             <span class="text-xl">${importanceIcons}</span>
                         </div>
                     `;
-                    cardContainer.appendChild(card);
-                    heroListContainer.appendChild(cardContainer);
+                    heroListContainer.appendChild(card);
                 });
             }
         }
 
-        // Fungsi untuk merender daftar hero di tampilan edit
-        function renderEditList() {
-            editListContainer.innerHTML = '';
-            const allCategories = ['Adv', 'pvp', 'DG', 'CR', 'Raid', 'All content'];
-            const allImportances = ['🔥', '⭐', '🍁', '🍂'];
-
-            heroes.forEach(hero => {
-                const card = document.createElement('div');
-                card.classList.add('bg-gray-800', 'p-6', 'rounded-xl', 'shadow-lg', 'border', 'border-gray-700');
-                card.innerHTML = `
-                    <h3 class="text-xl font-bold text-white mb-4">${hero.name}</h3>
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-400 mb-2">Pilih Tingkat Kepentingan:</p>
-                        <div class="flex flex-wrap gap-2" data-name="${hero.name}" data-type="importance">
-                            ${allImportances.map(icon => `
-                                <button class="edit-btn-importance px-3 py-1 rounded-full text-lg ${hero.importance.includes(icon) ? 'bg-yellow-500 text-black' : 'bg-gray-600 text-white hover:bg-gray-500'}" data-value="${icon}">
-                                    ${icon}
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400 mb-2">Pilih Kategori:</p>
-                        <div class="flex flex-wrap gap-2" data-name="${hero.name}" data-type="categories">
-                            ${allCategories.map(category => `
-                                <button class="edit-btn-category px-3 py-1 rounded-full text-xs font-semibold ${hero.categories.includes(category) ? 'bg-blue-500' : 'bg-gray-600 hover:bg-gray-500'}">
-                                    ${category}
-                                </button>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                editListContainer.appendChild(card);
-            });
-        }
-
-        // Simpan perubahan ke Firestore
-        async function saveChanges() {
-            const batch = writeBatch(db);
-            const editCards = document.querySelectorAll('#edit-list > div');
-            
-            editCards.forEach(card => {
-                const name = card.querySelector('h3').innerText;
-                const heroRef = doc(db, 'artifacts', appId, 'users', userId, 'heroes', name);
-
-                const importanceButtons = card.querySelectorAll('.edit-btn-importance');
-                const newImportance = Array.from(importanceButtons)
-                                          .filter(btn => btn.classList.contains('bg-yellow-500'))
-                                          .map(btn => btn.dataset.value);
-
-                const categoryButtons = card.querySelectorAll('.edit-btn-category');
-                const newCategories = Array.from(categoryButtons)
-                                          .filter(btn => btn.classList.contains('bg-blue-500'))
-                                          .map(btn => btn.innerText);
-
-                batch.update(heroRef, {
-                    importance: newImportance,
-                    categories: newCategories,
-                });
-            });
-
-            try {
-                await batch.commit();
-                console.log("Perubahan berhasil disimpan.");
-            } catch (e) {
-                console.error("Gagal menyimpan perubahan: ", e);
-            }
-        }
-
-        // Event Listeners
-        document.getElementById('edit-btn').addEventListener('click', () => {
-            passwordModal.classList.remove('hidden');
-            passwordInput.focus();
-        });
-
-        cancelPasswordBtn.addEventListener('click', () => {
-            passwordModal.classList.add('hidden');
-            passwordInput.value = '';
-            passwordErrorMessage.classList.add('hidden');
-        });
-
-        submitPasswordBtn.addEventListener('click', () => {
-            const password = passwordInput.value;
-            if (password === SECRET_PASSWORD) {
-                passwordModal.classList.add('hidden');
-                passwordInput.value = '';
-                passwordErrorMessage.classList.add('hidden');
-                switchView('edit');
-            } else {
-                passwordErrorMessage.classList.remove('hidden');
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        });
-
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                submitPasswordBtn.click();
-            }
-        });
-
-        document.getElementById('cancel-edit-btn').addEventListener('click', () => switchView('main'));
-        document.getElementById('update-btn').addEventListener('click', async () => {
-            await saveChanges();
-            switchView('main');
-        });
-
-        // Event listener untuk tombol filter di tampilan utama
-        document.getElementById('importance-filters').addEventListener('click', (e) => {
+        // Event listener untuk tombol filter kepentingan
+        importanceFilters.addEventListener('click', (e) => {
             const targetId = e.target.id;
             document.querySelectorAll('#importance-filters .button').forEach(btn => btn.classList.remove('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900'));
             e.target.classList.add('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900');
@@ -391,10 +207,11 @@
             else if (targetId === 'star-btn') currentImportanceFilter = '⭐';
             else if (targetId === 'leaf-btn') currentImportanceFilter = '🍁';
             else if (targetId === 'withered-leaf-btn') currentImportanceFilter = '🍂';
-            renderMainList();
+            renderHeroList();
         });
 
-        document.getElementById('category-filters').addEventListener('click', (e) => {
+        // Event listener untuk tombol filter kategori
+        categoryFilters.addEventListener('click', (e) => {
             const targetId = e.target.id;
             document.querySelectorAll('#category-filters .button').forEach(btn => btn.classList.remove('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900'));
             e.target.classList.add('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900');
@@ -405,75 +222,11 @@
             else if (targetId === 'dg-btn') currentCategoryFilter = 'DG';
             else if (targetId === 'cr-btn') currentCategoryFilter = 'CR';
             else if (targetId === 'raid-btn') currentCategoryFilter = 'Raid';
-            renderMainList();
+            renderHeroList();
         });
-
-        // Event delegation untuk tombol edit
-        editListContainer.addEventListener('click', (e) => {
-            const target = e.target;
-            const card = target.closest('div[data-name]');
-            if (!card) return;
-
-            const name = card.dataset.name;
-            const heroIndex = heroes.findIndex(h => h.name === name);
-
-            if (target.classList.contains('edit-btn-importance')) {
-                const value = target.dataset.value;
-                const heroImportanceButtons = card.querySelectorAll('.edit-btn-importance');
-                heroImportanceButtons.forEach(btn => {
-                    btn.classList.remove('bg-yellow-500', 'text-black');
-                    btn.classList.add('bg-gray-600', 'text-white');
-                });
-                target.classList.remove('bg-gray-600', 'text-white');
-                target.classList.add('bg-yellow-500', 'text-black');
-            } else if (target.classList.contains('edit-btn-category')) {
-                const category = target.innerText;
-                target.classList.toggle('bg-blue-500');
-                target.classList.toggle('bg-gray-600');
-                target.classList.toggle('hover:bg-gray-500');
-            }
-        });
-
-        // Inisialisasi dan sinkronisasi dengan Firebase
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                userId = user.uid;
-            } else {
-                try {
-                    await setPersistence(auth, browserLocalPersistence);
-                    const anonUser = await signInAnonymously(auth);
-                    userId = anonUser.user.uid;
-                } catch (error) {
-                    console.error("Authentication Error: ", error);
-                    userId = `anon-${crypto.randomUUID()}`;
-                }
-            }
-
-            if (userId) {
-                userIdDisplay.innerText = `User ID: ${userId}`;
-                const userHeroesRef = collection(db, 'artifacts', appId, 'users', userId, 'heroes');
-                
-                const firstLoad = await getDocs(userHeroesRef);
-                if (firstLoad.empty) {
-                    const batch = writeBatch(db);
-                    initialHeroes.forEach(hero => {
-                        const heroRef = doc(userHeroesRef, hero.name);
-                        batch.set(heroRef, hero);
-                    });
-                    await batch.commit();
-                }
-
-                // Listen for real-time updates
-                onSnapshot(userHeroesRef, (snapshot) => {
-                    const updatedHeroes = [];
-                    snapshot.forEach((doc) => {
-                        updatedHeroes.push(doc.data());
-                    });
-                    heroes = updatedHeroes;
-                    renderMainList();
-                });
-            }
-        });
+        
+        // Render daftar hero saat halaman dimuat
+        renderHeroList();
     </script>
 </body>
 </html>
