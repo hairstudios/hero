@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seven Knight Hero Filter</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+        }
+        .hero-card-container {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out, height 0.5s ease-in-out;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-start;
+        }
+        .hero-card.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .button.active {
+            @apply ring-4 ring-offset-2 ring-offset-gray-900;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen">
+
+    <!-- Main Container -->
+    <div class="w-full max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-white">Klasifikasi Hero Seven Knight</h1>
+            <p class="text-sm sm:text-base text-gray-400">Temukan pahlawan berdasarkan tingkat kepentingan dan kategori mereka.</p>
+            <div id="userIdDisplay" class="text-xs text-gray-500 mt-2"></div>
+            <button id="edit-btn" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Edit Klasifikasi</button>
+        </header>
+
+        <!-- Main View -->
+        <div id="main-view">
+            <!-- Filter Buttons (Importance) -->
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4" id="importance-filters">
+                <button id="all-importance-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-gray-700 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 active">Semua</button>
+                <button id="fire-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-red-700 text-white rounded-lg font-medium hover:bg-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500">Sangat Penting 🔥</button>
+                <button id="star-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-yellow-700 text-white rounded-lg font-medium hover:bg-yellow-600 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500">Penting ⭐</button>
+                <button id="leaf-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-green-700 text-white rounded-lg font-medium hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500">Opsional 🍁</button>
+                <button id="withered-leaf-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-purple-700 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500">Tidak Disarankan 🍂</button>
+            </div>
+
+            <!-- Filter Buttons (Category) -->
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8" id="category-filters">
+                <button id="all-category-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-gray-700 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 active">Semua Kategori</button>
+                <button id="adv-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-blue-700 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">ADV</button>
+                <button id="pvp-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-purple-700 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500">PVP</button>
+                <button id="dg-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-orange-700 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500">DG</button>
+                <button id="cr-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-teal-700 text-white rounded-lg font-medium hover:bg-teal-600 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500">CR</button>
+                <button id="raid-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500">Raid</button>
+            </div>
+
+            <!-- Hero List Container -->
+            <div id="hero-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Hero cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Edit View -->
+        <div id="edit-view" class="hidden">
+            <h2 class="text-2xl font-bold mb-4 text-white">Edit Klasifikasi Hero</h2>
+            <div id="edit-list" class="grid grid-cols-1 gap-6">
+                <!-- Editable hero cards will be dynamically inserted here -->
+            </div>
+            <div class="flex justify-center mt-8 gap-4">
+                <button id="update-btn" class="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500">Update & Simpan</button>
+                <button id="cancel-edit-btn" class="px-6 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal-overlay hidden">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl text-center">
+            <h3 class="text-xl font-bold mb-4 text-white">Masukkan Kata Sandi</h3>
+            <input type="password" id="password-input" class="w-full px-4 py-2 rounded-lg bg-gray-700 text-white mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Kata Sandi">
+            <p id="password-error-message" class="text-red-500 hidden mb-4 text-sm">Kata sandi salah!</p>
+            <div class="flex justify-center gap-4">
+                <button id="submit-password-btn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Submit</button>
+                <button id="cancel-password-btn" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Filtering and Editing Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, setDoc, getDoc, getDocs, runTransaction, query, where, addDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        setLogLevel('debug');
+        
+        // Data pahlawan awal jika database kosong
+        const initialHeroes = [
+            { name: 'Leo', categories: ['DG', 'CR'], importance: ['⭐'] },
+            { name: 'Black rose', categories: ['Raid'], importance: ['⭐'] },
+            { name: 'Rei', categories: ['DG'], importance: ['⭐'] },
+            { name: 'Sera', categories: ['CR'], importance: ['🍁'] },
+            { name: 'Evan', categories: ['Raid', 'Adv', 'CR'], importance: ['🔥'] },
+            { name: 'Karon', categories: ['Raid'], importance: ['⭐'] },
+            { name: 'Lucy', categories: ['Raid'], importance: ['⭐'] },
+            { name: 'Yui', categories: ['Raid', 'CR'], importance: ['⭐'] },
+            { name: 'Chloe', categories: ['Raid', 'CR'], importance: ['⭐'] },
+            { name: 'Victoria', categories: ['Raid'], importance: ['⭐'] },
+            { name: 'Asura', categories: ['Raid', 'DG'], importance: ['⭐'] },
+            { name: 'Heavenia', categories: [], importance: ['🍂'] },
+            { name: 'Feng yan', categories: ['CR', 'DG'], importance: ['⭐'] },
+            { name: 'Soi', categories: ['CR', 'DG'], importance: ['🍁'] },
+            { name: 'Sniper', categories: ['Raid', 'DG'], importance: ['🍁'] },
+            { name: 'Jupy', categories: ['Raid'], importance: ['🍁'] },
+            { name: 'Jin', categories: ['CR'], importance: ['⭐'] },
+            { name: 'Cleo', categories: ['DG'], importance: ['⭐'] },
+            { name: 'Ariel', categories: ['CR', 'Raid'], importance: ['⭐'] },
+            { name: 'Joker', categories: ['DG'], importance: ['⭐'] },
+            { name: 'Noho', categories: [], importance: ['🍂'] },
+            { name: 'Theo', categories: ['Adv', 'pvp'], importance: ['🔥'] },
+            { name: 'Shane', categories: ['CR', 'Raid'], importance: ['🔥'] },
+            { name: 'Eileene', categories: ['Adv', 'pvp'], importance: ['⭐'] },
+            { name: 'Rachel', categories: ['Raid', 'Adv', 'CR'], importance: ['⭐'] },
+            { name: 'Karma', categories: ['Adv', 'pvp'], importance: ['⭐'] },
+            { name: 'Espada', categories: ['Raid'], importance: ['🔥'] },
+            { name: 'Pascal', categories: ['Raid', 'CR', 'DG'], importance: ['🔥'] },
+            { name: 'Lina', categories: ['All content'], importance: ['🔥'] },
+            { name: 'Sieg', categories: ['CR', 'Raid'], importance: ['⭐'] },
+            { name: 'Taka', categories: ['CR'], importance: ['🔥'] },
+            { name: 'Knox', categories: ['pvp'], importance: ['⭐'] },
+            { name: 'Biscuit', categories: ['All content'], importance: ['🔥'] },
+            { name: 'Lee', categories: ['CR'], importance: ['⭐'] },
+            { name: 'Lania', categories: ['DG'], importance: ['🍁'] },
+            { name: 'Karin', categories: [], importance: ['🍂'] },
+            { name: 'Silvesta', categories: ['pvp'], importance: ['🍁'] },
+            { name: 'Dellons', categories: ['Adv', 'pvp'], importance: ['🍁'] },
+            { name: 'Yeonhee', categories: ['CR', 'pvp', 'DG'], importance: ['⭐'] },
+            { name: 'Jave', categories: ['Adv', 'DG', 'pvp'], importance: ['⭐'] },
+            { name: 'Spike', categories: ['DG', 'pvp'], importance: ['⭐'] },
+            { name: 'Rudy', categories: ['Pvp'], importance: ['⭐'] },
+            { name: 'Ace', categories: ['All content'], importance: ['⭐'] },
+            { name: 'Vanessa', categories: ['All content'], importance: ['🍁'] },
+            { name: 'Kriss', categories: ['pvp'], importance: ['⭐'] },
+            { name: 'Rook', categories: ['pvp'], importance: ['🍁'] },
+            { name: 'Nia', categories: ['pvp'], importance: ['🍁'] },
+            { name: 'Ballista', categories: ['pvp'], importance: ['🍁'] },
+            { name: 'Jane', categories: ['DG'], importance: ['⭐'] },
+            { name: 'May', categories: ['CR'], importance: ['⭐'] },
+            { name: 'Yuri', categories: ['Raid'], importance: ['🍁'] },
+            { name: 'Catty', categories: ['DG'], importance: ['🍂'] },
+            { name: 'Sylvia', categories: [], importance: ['🍂'] },
+            { name: 'Bane', categories: [], importance: ['🍂'] },
+            { name: 'Hellenia', categories: [], importance: ['🍂'] },
+            { name: 'Sarah', categories: [], importance: ['🍂'] },
+            { name: 'Rahkun', categories: [], importance: ['🍂'] },
+            { name: 'Hokin', categories: [], importance: ['🍂'] },
+            { name: 'Yushin', categories: ['Adv', 'pvp'], importance: ['⭐'] },
+            { name: 'Rin', categories: ['Adv', 'pvp'], importance: ['⭐'] },
+            { name: 'Ruri', categories: ['CR'], importance: ['🔥'] },
+            { name: 'Aragon', categories: [], importance: ['🍁'] },
+            { name: 'Alice', categories: [], importance: ['🍁'] },
+            { name: 'Colt', categories: ['pvp'], importance: ['⭐'] },
+            { name: 'Bi dam', categories: ['DG'], importance: ['🔥'] },
+            { name: 'Daisy', categories: ['Raid'], importance: ['⭐'] },
+            { name: 'Miho', categories: [], importance: ['🍁'] },
+            { name: 'Platin', categories: ['pvp'], importance: ['⭐'] },
+            { name: 'Velika', categories: ['Adv', 'DG'], importance: ['🍁'] },
+            { name: 'Chancellor', categories: ['pvp'], importance: ['🍁'] },
+            { name: 'Orly', categories: ['pvp'], importance: ['⭐'] },
+            { name: 'Melcure', categories: ['pvp'], importance: ['⭐'] },
+            { name: 'Klahan', categories: [], importance: ['🍂'] },
+            { name: 'Fai', categories: [], importance: ['🔥'] },
+            { name: 'Rosie', categories: [], importance: ['🔥'] },
+            { name: 'Juri', categories: [], importance: ['🔥'] },
+        ];
+
+        // Inisialisasi Firebase
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let userId = null;
+        let heroes = [];
+        let currentImportanceFilter = null;
+        let currentCategoryFilter = null;
+
+        // Kata sandi untuk mode edit
+        const SECRET_PASSWORD = '7knight';
+
+        const mainView = document.getElementById('main-view');
+        const editView = document.getElementById('edit-view');
+        const heroListContainer = document.getElementById('hero-list');
+        const editListContainer = document.getElementById('edit-list');
+        const userIdDisplay = document.getElementById('userIdDisplay');
+        const passwordModal = document.getElementById('password-modal');
+        const passwordInput = document.getElementById('password-input');
+        const passwordErrorMessage = document.getElementById('password-error-message');
+        const submitPasswordBtn = document.getElementById('submit-password-btn');
+        const cancelPasswordBtn = document.getElementById('cancel-password-btn');
+
+        // Fungsi untuk beralih antara tampilan
+        function switchView(view) {
+            if (view === 'main') {
+                mainView.classList.remove('hidden');
+                editView.classList.add('hidden');
+            } else {
+                mainView.classList.add('hidden');
+                editView.classList.remove('hidden');
+                renderEditList();
+            }
+        }
+
+        // Fungsi untuk merender daftar hero di tampilan utama
+        function renderMainList() {
+            heroListContainer.innerHTML = '';
+            const filteredHeroes = heroes.filter(hero => {
+                const isImportanceMatch = currentImportanceFilter === null || hero.importance.includes(currentImportanceFilter);
+                const isCategoryMatch = currentCategoryFilter === null || hero.categories.includes(currentCategoryFilter) || hero.categories.includes('All content');
+                return isImportanceMatch && isCategoryMatch;
+            });
+
+            if (filteredHeroes.length === 0) {
+                heroListContainer.innerHTML = `<p class="text-center text-gray-500 col-span-full mt-8">Tidak ada pahlawan yang ditemukan.</p>`;
+            } else {
+                filteredHeroes.forEach(hero => {
+                    const cardContainer = document.createElement('div');
+                    cardContainer.classList.add('hero-card-container');
+                    
+                    const card = document.createElement('div');
+                    card.classList.add('hero-card', 'bg-gray-800', 'p-6', 'rounded-xl', 'shadow-lg', 'border', 'border-gray-700');
+
+                    const importanceIcons = hero.importance.join(' ');
+                    const categories = hero.categories.length > 0 ? hero.categories.join(', ') : 'Tidak ada kategori';
+
+                    card.innerHTML = `
+                        <h2 class="text-xl font-bold text-white mb-2">${hero.name}</h2>
+                        <p class="text-sm text-gray-400 mb-4">Kategori: <span class="text-gray-200">${categories}</span></p>
+                        <div class="flex items-center">
+                            <span class="text-xl">${importanceIcons}</span>
+                        </div>
+                    `;
+                    cardContainer.appendChild(card);
+                    heroListContainer.appendChild(cardContainer);
+                });
+            }
+        }
+
+        // Fungsi untuk merender daftar hero di tampilan edit
+        function renderEditList() {
+            editListContainer.innerHTML = '';
+            const allCategories = ['Adv', 'pvp', 'DG', 'CR', 'Raid', 'All content'];
+            const allImportances = ['🔥', '⭐', '🍁', '🍂'];
+
+            heroes.forEach(hero => {
+                const card = document.createElement('div');
+                card.classList.add('bg-gray-800', 'p-6', 'rounded-xl', 'shadow-lg', 'border', 'border-gray-700');
+                card.innerHTML = `
+                    <h3 class="text-xl font-bold text-white mb-4">${hero.name}</h3>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-400 mb-2">Pilih Tingkat Kepentingan:</p>
+                        <div class="flex flex-wrap gap-2" data-name="${hero.name}" data-type="importance">
+                            ${allImportances.map(icon => `
+                                <button class="edit-btn-importance px-3 py-1 rounded-full text-lg ${hero.importance.includes(icon) ? 'bg-yellow-500 text-black' : 'bg-gray-600 text-white hover:bg-gray-500'}" data-value="${icon}">
+                                    ${icon}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400 mb-2">Pilih Kategori:</p>
+                        <div class="flex flex-wrap gap-2" data-name="${hero.name}" data-type="categories">
+                            ${allCategories.map(category => `
+                                <button class="edit-btn-category px-3 py-1 rounded-full text-xs font-semibold ${hero.categories.includes(category) ? 'bg-blue-500' : 'bg-gray-600 hover:bg-gray-500'}">
+                                    ${category}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                editListContainer.appendChild(card);
+            });
+        }
+
+        // Simpan perubahan ke Firestore
+        async function saveChanges() {
+            const batch = writeBatch(db);
+            const editCards = document.querySelectorAll('#edit-list > div');
+            
+            editCards.forEach(card => {
+                const name = card.querySelector('h3').innerText;
+                const heroRef = doc(db, 'artifacts', appId, 'users', userId, 'heroes', name);
+
+                const importanceButtons = card.querySelectorAll('.edit-btn-importance');
+                const newImportance = Array.from(importanceButtons)
+                                          .filter(btn => btn.classList.contains('bg-yellow-500'))
+                                          .map(btn => btn.dataset.value);
+
+                const categoryButtons = card.querySelectorAll('.edit-btn-category');
+                const newCategories = Array.from(categoryButtons)
+                                          .filter(btn => btn.classList.contains('bg-blue-500'))
+                                          .map(btn => btn.innerText);
+
+                batch.update(heroRef, {
+                    importance: newImportance,
+                    categories: newCategories,
+                });
+            });
+
+            try {
+                await batch.commit();
+                console.log("Perubahan berhasil disimpan.");
+            } catch (e) {
+                console.error("Gagal menyimpan perubahan: ", e);
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('edit-btn').addEventListener('click', () => {
+            passwordModal.classList.remove('hidden');
+            passwordInput.focus();
+        });
+
+        cancelPasswordBtn.addEventListener('click', () => {
+            passwordModal.classList.add('hidden');
+            passwordInput.value = '';
+            passwordErrorMessage.classList.add('hidden');
+        });
+
+        submitPasswordBtn.addEventListener('click', () => {
+            const password = passwordInput.value;
+            if (password === SECRET_PASSWORD) {
+                passwordModal.classList.add('hidden');
+                passwordInput.value = '';
+                passwordErrorMessage.classList.add('hidden');
+                switchView('edit');
+            } else {
+                passwordErrorMessage.classList.remove('hidden');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitPasswordBtn.click();
+            }
+        });
+
+        document.getElementById('cancel-edit-btn').addEventListener('click', () => switchView('main'));
+        document.getElementById('update-btn').addEventListener('click', async () => {
+            await saveChanges();
+            switchView('main');
+        });
+
+        // Event listener untuk tombol filter di tampilan utama
+        document.getElementById('importance-filters').addEventListener('click', (e) => {
+            const targetId = e.target.id;
+            document.querySelectorAll('#importance-filters .button').forEach(btn => btn.classList.remove('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900'));
+            e.target.classList.add('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900');
+
+            if (targetId === 'all-importance-btn') currentImportanceFilter = null;
+            else if (targetId === 'fire-btn') currentImportanceFilter = '🔥';
+            else if (targetId === 'star-btn') currentImportanceFilter = '⭐';
+            else if (targetId === 'leaf-btn') currentImportanceFilter = '🍁';
+            else if (targetId === 'withered-leaf-btn') currentImportanceFilter = '🍂';
+            renderMainList();
+        });
+
+        document.getElementById('category-filters').addEventListener('click', (e) => {
+            const targetId = e.target.id;
+            document.querySelectorAll('#category-filters .button').forEach(btn => btn.classList.remove('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900'));
+            e.target.classList.add('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900');
+
+            if (targetId === 'all-category-btn') currentCategoryFilter = null;
+            else if (targetId === 'adv-btn') currentCategoryFilter = 'Adv';
+            else if (targetId === 'pvp-btn') currentCategoryFilter = 'pvp';
+            else if (targetId === 'dg-btn') currentCategoryFilter = 'DG';
+            else if (targetId === 'cr-btn') currentCategoryFilter = 'CR';
+            else if (targetId === 'raid-btn') currentCategoryFilter = 'Raid';
+            renderMainList();
+        });
+
+        // Event delegation untuk tombol edit
+        editListContainer.addEventListener('click', (e) => {
+            const target = e.target;
+            const card = target.closest('div[data-name]');
+            if (!card) return;
+
+            const name = card.dataset.name;
+            const heroIndex = heroes.findIndex(h => h.name === name);
+
+            if (target.classList.contains('edit-btn-importance')) {
+                const value = target.dataset.value;
+                const heroImportanceButtons = card.querySelectorAll('.edit-btn-importance');
+                heroImportanceButtons.forEach(btn => {
+                    btn.classList.remove('bg-yellow-500', 'text-black');
+                    btn.classList.add('bg-gray-600', 'text-white');
+                });
+                target.classList.remove('bg-gray-600', 'text-white');
+                target.classList.add('bg-yellow-500', 'text-black');
+            } else if (target.classList.contains('edit-btn-category')) {
+                const category = target.innerText;
+                target.classList.toggle('bg-blue-500');
+                target.classList.toggle('bg-gray-600');
+                target.classList.toggle('hover:bg-gray-500');
+            }
+        });
+
+        // Inisialisasi dan sinkronisasi dengan Firebase
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+            } else {
+                try {
+                    await setPersistence(auth, browserLocalPersistence);
+                    const anonUser = await signInAnonymously(auth);
+                    userId = anonUser.user.uid;
+                } catch (error) {
+                    console.error("Authentication Error: ", error);
+                    userId = `anon-${crypto.randomUUID()}`;
+                }
+            }
+
+            if (userId) {
+                userIdDisplay.innerText = `User ID: ${userId}`;
+                const userHeroesRef = collection(db, 'artifacts', appId, 'users', userId, 'heroes');
+                
+                const firstLoad = await getDocs(userHeroesRef);
+                if (firstLoad.empty) {
+                    const batch = writeBatch(db);
+                    initialHeroes.forEach(hero => {
+                        const heroRef = doc(userHeroesRef, hero.name);
+                        batch.set(heroRef, hero);
+                    });
+                    await batch.commit();
+                }
+
+                // Listen for real-time updates
+                onSnapshot(userHeroesRef, (snapshot) => {
+                    const updatedHeroes = [];
+                    snapshot.forEach((doc) => {
+                        updatedHeroes.push(doc.data());
+                    });
+                    heroes = updatedHeroes;
+                    renderMainList();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
