@@ -45,9 +45,21 @@
             </div>
         </div>
 
-        <!-- Daftar Hero -->
-        <div id="hero-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Hero cards will be dynamically generated here -->
+        <!-- Tabel Daftar Hero -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left table-auto border-collapse">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-700 rounded-lg">
+                        <th class="py-3 px-4 rounded-tl-lg">Nomor</th>
+                        <th class="py-3 px-4">Nama</th>
+                        <th class="py-3 px-4 text-center">Prioritas</th>
+                        <th class="py-3 px-4 rounded-tr-lg">Kategori</th>
+                    </tr>
+                </thead>
+                <tbody id="hero-list">
+                    <!-- Hero rows will be dynamically generated here -->
+                </tbody>
+            </table>
         </div>
 
     </div>
@@ -148,27 +160,29 @@
                 return passesCategoryFilter && passesImportanceFilter;
             });
 
+            // Urutkan hero secara alfabetis
+            filteredHeroes.sort((a, b) => a.name.localeCompare(b.name));
+
             heroListContainer.innerHTML = '';
             
             // Tampilkan pesan jika tidak ada hero yang ditemukan
             if (filteredHeroes.length === 0) {
-                heroListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full mt-8">Tidak ada hero yang ditemukan dengan filter ini.</p>';
+                heroListContainer.innerHTML = '<tr><td colspan="4" class="text-center text-gray-500 py-4">Tidak ada hero yang ditemukan dengan filter ini.</td></tr>';
+            } else {
+                filteredHeroes.forEach((hero, index) => {
+                    const categoriesHtml = hero.categories.map(cat => `<span class="bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap">${cat.toUpperCase()}</span>`).join(' ');
+                    
+                    const row = `
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150">
+                            <td class="py-2 px-4">${index + 1}</td>
+                            <td class="py-2 px-4 font-medium text-gray-800">${hero.name}</td>
+                            <td class="py-2 px-4 text-center text-2xl">${hero.importance}</td>
+                            <td class="py-2 px-4 flex flex-wrap gap-1">${categoriesHtml}</td>
+                        </tr>
+                    `;
+                    heroListContainer.innerHTML += row;
+                });
             }
-
-            filteredHeroes.forEach(hero => {
-                const categoriesHtml = hero.categories.map(cat => `<span class="bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded-full">${cat.toUpperCase()}</span>`).join('');
-                
-                const heroCard = `
-                    <div class="bg-white rounded-lg shadow-md p-4 flex flex-col items-center text-center transition-transform duration-200 hover:scale-105">
-                        <div class="text-3xl mb-2">${hero.importance}</div>
-                        <h3 class="font-bold text-lg sm:text-xl text-gray-800">${hero.name}</h3>
-                        <div class="flex flex-wrap justify-center gap-1 mt-2">
-                            ${categoriesHtml}
-                        </div>
-                    </div>
-                `;
-                heroListContainer.innerHTML += heroCard;
-            });
         };
 
         // Fungsi untuk menangani klik filter
