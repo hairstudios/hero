@@ -3,230 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klasifikasi Hero Seven Knight</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Seven Knights Hero Classifier</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #121212;
-            color: #E0E0E0;
-        }
-        .hero-card-container {
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out, height 0.5s ease-in-out;
-            overflow: hidden;
-            display: flex;
-            align-items: flex-start;
-        }
-        .hero-card.hidden {
-            opacity: 0;
-            transform: scale(0.8);
-            height: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            margin-top: 0;
-            margin-bottom: 0;
-        }
-        .button.active {
-            @apply ring-4 ring-offset-2 ring-offset-gray-900;
+            background-color: #f3f4f6;
         }
     </style>
 </head>
-<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen">
+<body class="bg-gray-100 p-4 sm:p-8">
 
-    <!-- Main Container -->
-    <div class="w-full max-w-4xl mx-auto">
-        <!-- Header -->
-        <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-white">Klasifikasi Hero Seven Knight</h1>
-            <p class="text-sm sm:text-base text-gray-400">Temukan pahlawan berdasarkan tingkat kepentingan dan kategori mereka.</p>
-        </header>
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 sm:p-8">
+        <div class="flex flex-col items-center text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-2">Klasifikasi Hero Seven Knights</h1>
+            <p class="text-gray-500 max-w-lg">Pilih kategori atau tingkat kepentingan di bawah untuk menyaring daftar hero.</p>
+        </div>
 
-        <!-- Main View -->
-        <div id="main-view">
-            <!-- Filter Buttons (Importance) -->
-            <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4" id="importance-filters">
-                <button id="all-importance-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-gray-700 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 active">Semua</button>
-                <button id="fire-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-red-700 text-white rounded-lg font-medium hover:bg-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500">Sangat Penting 🔥</button>
-                <button id="star-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-yellow-700 text-white rounded-lg font-medium hover:bg-yellow-600 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500">Penting ⭐</button>
-                <button id="leaf-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-green-700 text-white rounded-lg font-medium hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500">Opsional 🍁</button>
-                <button id="withered-leaf-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-purple-700 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500">Tidak Disarankan 🍂</button>
-            </div>
-
-            <!-- Filter Buttons (Category) -->
-            <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8" id="category-filters">
-                <button id="all-category-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-gray-700 text-white rounded-lg font-medium hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 active">Semua Kategori</button>
-                <button id="adv-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-blue-700 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">ADV</button>
-                <button id="pvp-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-purple-700 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500">PVP</button>
-                <button id="dg-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-orange-700 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500">DG</button>
-                <button id="cr-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-teal-700 text-white rounded-lg font-medium hover:bg-teal-600 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500">CR</button>
-                <button id="raid-btn" class="button px-4 py-2 sm:px-6 sm:py-3 bg-amber-700 text-white rounded-lg font-medium hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500">Raid</button>
-            </div>
-
-            <!-- Hero List Container -->
-            <div id="hero-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Hero cards will be dynamically inserted here -->
+        <!-- Tombol Filter Kategori Konten -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Filter Kategori:</h2>
+            <div id="category-filters" class="flex flex-wrap justify-center gap-2 sm:gap-3">
+                <button data-filter="All" class="filter-btn text-sm sm:text-base px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300">Semua</button>
+                <button data-filter="Adv" class="filter-btn text-sm sm:text-base px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300">ADV</button>
+                <button data-filter="Pvp" class="filter-btn text-sm sm:text-base px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300">PVP</button>
+                <button data-filter="Dg" class="filter-btn text-sm sm:text-base px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300">DG</button>
+                <button data-filter="Cr" class="filter-btn text-sm sm:text-base px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300">CR</button>
+                <button data-filter="Raid" class="filter-btn text-sm sm:text-base px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300">RAID</button>
             </div>
         </div>
+
+        <!-- Tombol Filter Tingkat Kepentingan -->
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Filter Kepentingan:</h2>
+            <div id="importance-filters" class="flex flex-wrap justify-center gap-2 sm:gap-3">
+                <button data-filter="All" class="filter-btn text-xl sm:text-2xl px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 text-gray-700 hover:bg-gray-300">Semua</button>
+                <button data-filter="🔥" class="filter-btn text-xl sm:text-2xl px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 hover:bg-gray-300">🔥</button>
+                <button data-filter="⭐" class="filter-btn text-xl sm:text-2xl px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 hover:bg-gray-300">⭐</button>
+                <button data-filter="🍁" class="filter-btn text-xl sm:text-2xl px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 hover:bg-gray-300">🍁</button>
+                <button data-filter="🍂" class="filter-btn text-xl sm:text-2xl px-4 py-2 rounded-full font-medium transition-all duration-200 bg-gray-200 hover:bg-gray-300">🍂</button>
+            </div>
+        </div>
+
+        <!-- Daftar Hero -->
+        <div id="hero-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Hero cards will be dynamically generated here -->
+        </div>
+
     </div>
-    
-    <!-- JavaScript untuk logika aplikasi -->
+
     <script>
-        // Data pahlawan yang disimpan di dalam file HTML
-        // Anda bisa mengedit, menambahkan, atau menghapus hero di sini
-        let heroes = [
-            // Format data:
-            // { name: 'Nama Hero', categories: ['Kategori 1', 'Kategori 2'], importance: ['Tingkat Kepentingan'] },
-            { name: 'Leo', categories: ['DG', 'CR'], importance: ['⭐'] },
-            { name: 'Black rose', categories: ['Raid'], importance: ['⭐'] },
-            { name: 'Rei', categories: ['DG'], importance: ['⭐'] },
-            { name: 'Sera', categories: ['CR'], importance: ['🍁'] },
-            { name: 'Evan', categories: ['Raid', 'Adv', 'CR'], importance: ['🔥'] },
-            { name: 'Karon', categories: ['Raid'], importance: ['⭐'] },
-            { name: 'Lucy', categories: ['Raid'], importance: ['⭐'] },
-            { name: 'Yui', categories: ['Raid', 'CR'], importance: ['⭐'] },
-            { name: 'Chloe', categories: ['Raid', 'CR'], importance: ['⭐'] },
-            { name: 'Victoria', categories: ['Raid'], importance: ['⭐'] },
-            { name: 'Asura', categories: ['Raid', 'DG'], importance: ['⭐'] },
-            { name: 'Heavenia', categories: [], importance: ['🍂'] },
-            { name: 'Feng yan', categories: ['CR', 'DG'], importance: ['⭐'] },
-            { name: 'Soi', categories: ['CR', 'DG'], importance: ['🍁'] },
-            { name: 'Sniper', categories: ['Raid', 'DG'], importance: ['🍁'] },
-            { name: 'Jupy', categories: ['Raid'], importance: ['🍁'] },
-            { name: 'Jin', categories: ['CR'], importance: ['⭐'] },
-            { name: 'Cleo', categories: ['DG'], importance: ['⭐'] },
-            { name: 'Ariel', categories: ['CR', 'Raid'], importance: ['⭐'] },
-            { name: 'Joker', categories: ['DG'], importance: ['⭐'] },
-            { name: 'Noho', categories: [], importance: ['🍂'] },
-            { name: 'Theo', categories: ['Adv', 'pvp'], importance: ['🔥'] },
-            { name: 'Shane', categories: ['CR', 'Raid'], importance: ['🔥'] },
-            { name: 'Eileene', categories: ['Adv', 'pvp'], importance: ['⭐'] },
-            { name: 'Rachel', categories: ['Raid', 'Adv', 'CR'], importance: ['⭐'] },
-            { name: 'Karma', categories: ['Adv', 'pvp'], importance: ['⭐'] },
-            { name: 'Espada', categories: ['Raid'], importance: ['🔥'] },
-            { name: 'Pascal', categories: ['Raid', 'CR', 'DG'], importance: ['🔥'] },
-            { name: 'Lina', categories: ['All content'], importance: ['🔥'] },
-            { name: 'Sieg', categories: ['CR', 'Raid'], importance: ['⭐'] },
-            { name: 'Taka', categories: ['CR'], importance: ['🔥'] },
-            { name: 'Knox', categories: ['pvp'], importance: ['⭐'] },
-            { name: 'Biscuit', categories: ['All content'], importance: ['🔥'] },
-            { name: 'Lee', categories: ['CR'], importance: ['⭐'] },
-            { name: 'Lania', categories: ['DG'], importance: ['🍁'] },
-            { name: 'Karin', categories: [], importance: ['🍂'] },
-            { name: 'Silvesta', categories: ['pvp'], importance: ['🍁'] },
-            { name: 'Dellons', categories: ['Adv', 'pvp'], importance: ['🍁'] },
-            { name: 'Yeonhee', categories: ['CR', 'pvp', 'DG'], importance: ['⭐'] },
-            { name: 'Jave', categories: ['Adv', 'DG', 'pvp'], importance: ['⭐'] },
-            { name: 'Spike', categories: ['DG', 'pvp'], importance: ['⭐'] },
-            { name: 'Rudy', categories: ['pvp'], importance: ['⭐'] },
-            { name: 'Ace', categories: ['All content'], importance: ['⭐'] },
-            { name: 'Vanessa', categories: ['All content'], importance: ['🍁'] },
-            { name: 'Kriss', categories: ['pvp'], importance: ['⭐'] },
-            { name: 'Rook', categories: ['pvp'], importance: ['🍁'] },
-            { name: 'Nia', categories: ['pvp'], importance: ['🍁'] },
-            { name: 'Ballista', categories: ['pvp'], importance: ['🍁'] },
-            { name: 'Jane', categories: ['DG'], importance: ['⭐'] },
-            { name: 'May', categories: ['CR'], importance: ['⭐'] },
-            { name: 'Yuri', categories: ['Raid'], importance: ['🍁'] },
-            { name: 'Catty', categories: ['DG'], importance: ['🍂'] },
-            { name: 'Sylvia', categories: [], importance: ['🍂'] },
-            { name: 'Bane', categories: [], importance: ['🍂'] },
-            { name: 'Hellenia', categories: [], importance: ['🍂'] },
-            { name: 'Sarah', categories: [], importance: ['🍂'] },
-            { name: 'Rahkun', categories: [], importance: ['🍂'] },
-            { name: 'Hokin', categories: [], importance: ['🍂'] },
-            { name: 'Yushin', categories: ['Adv', 'pvp'], importance: ['⭐'] },
-            { name: 'Rin', categories: ['Adv', 'pvp'], importance: ['⭐'] },
-            { name: 'Ruri', categories: ['CR'], importance: ['🔥'] },
-            { name: 'Aragon', categories: [], importance: ['🍁'] },
-            { name: 'Alice', categories: [], importance: ['🍁'] },
-            { name: 'Colt', categories: ['pvp'], importance: ['⭐'] },
-            { name: 'Bi dam', categories: ['DG'], importance: ['🔥'] },
-            { name: 'Daisy', categories: ['Raid'], importance: ['⭐'] },
-            { name: 'Miho', categories: [], importance: ['🍁'] },
-            { name: 'Platin', categories: ['pvp'], importance: ['⭐'] },
-            { name: 'Velika', categories: ['Adv', 'DG'], importance: ['🍁'] },
-            { name: 'Chancellor', categories: ['pvp'], importance: ['🍁'] },
-            { name: 'Orly', categories: ['pvp'], importance: ['⭐'] },
-            { name: 'Melcure', categories: ['pvp'], importance: ['⭐'] },
-            { name: 'Klahan', categories: [], importance: ['🍂'] },
-            { name: 'Fai', categories: [], importance: ['🔥'] },
-            { name: 'Rosie', categories: [], importance: ['🔥'] },
-            { name: 'Juri', categories: [], importance: ['🔥'] },
+        // Data hero dalam bentuk array of objects
+        const heroes = [
+            { name: "Leo", categories: ["DG", "CR"], importance: "⭐" },
+            { name: "Black rose", categories: ["Raid"], importance: "⭐" },
+            { name: "Rei", categories: ["DG"], importance: "⭐" },
+            { name: "Sera", categories: ["CR"], importance: "🍁" },
+            { name: "Evan", categories: ["Raid", "Adv", "CR"], importance: "🔥" },
+            { name: "Karon", categories: ["Raid"], importance: "⭐" },
+            { name: "Lucy", categories: ["Raid"], importance: "⭐" },
+            { name: "Yui", categories: ["Raid", "CR"], importance: "⭐" },
+            { name: "Chloe", categories: ["Raid", "CR"], importance: "⭐" },
+            { name: "Victoria", categories: ["Raid"], importance: "⭐" },
+            { name: "Asura", categories: ["Raid", "DG"], importance: "⭐" },
+            { name: "Heavenia", categories: [], importance: "🍂" },
+            { name: "Feng yan", categories: ["CR", "DG"], importance: "⭐" },
+            { name: "Soi", categories: ["CR", "DG"], importance: "🍁" },
+            { name: "Sniper", categories: ["Raid", "DG"], importance: "🍁" },
+            { name: "Jupy", categories: ["Raid"], importance: "🍁" },
+            { name: "Jin", categories: ["CR"], importance: "⭐" },
+            { name: "Cleo", categories: ["DG"], importance: "⭐" },
+            { name: "Ariel", categories: ["CR", "Raid"], importance: "⭐" },
+            { name: "Joker", categories: ["DG"], importance: "⭐" },
+            { name: "Noho", categories: [], importance: "🍂" },
+            { name: "Theo", categories: ["Adv", "Pvp"], importance: "🔥" },
+            { name: "Shane", categories: ["CR", "Raid"], importance: "🔥" },
+            { name: "Eileene", categories: ["Adv", "Pvp"], importance: "⭐" },
+            { name: "Rachel", categories: ["Raid", "Adv", "CR"], importance: "⭐" },
+            { name: "Karma", categories: ["Adv", "Pvp"], importance: "⭐" },
+            { name: "Espada", categories: ["Raid"], importance: "🔥" },
+            { name: "Pascal", categories: ["Raid", "CR", "DG"], importance: "🔥" },
+            { name: "Lina", categories: ["Adv", "Pvp", "CR", "DG", "Raid"], importance: "🔥" },
+            { name: "Sieg", categories: ["CR", "Raid"], importance: "⭐" },
+            { name: "Taka", categories: ["CR"], importance: "🔥" },
+            { name: "Knox", categories: ["Pvp"], importance: "⭐" },
+            { name: "Biscuit", categories: ["Adv", "Pvp", "CR", "DG", "Raid"], importance: "🔥" },
+            { name: "Lee", categories: ["CR"], importance: "⭐" },
+            { name: "Lania", categories: ["DG"], importance: "🍁" },
+            { name: "Karin", categories: [], importance: "🍂" },
+            { name: "Silvesta", categories: ["Pvp"], importance: "🍁" },
+            { name: "Dellons", categories: ["Adv", "Pvp"], importance: "🍁" },
+            { name: "Yeonhee", categories: ["CR", "Pvp", "DG"], importance: "⭐" },
+            { name: "Jave", categories: ["Adv", "DG", "Pvp"], importance: "⭐" },
+            { name: "Spike", categories: ["DG", "Pvp"], importance: "⭐" },
+            { name: "Rudy", categories: ["Pvp"], importance: "⭐" },
+            { name: "Ace", categories: ["Adv", "Pvp", "CR", "DG", "Raid"], importance: "⭐" },
+            { name: "Vanessa", categories: ["Adv", "Pvp", "CR", "DG", "Raid"], importance: "🍁" },
+            { name: "Kriss", categories: ["Pvp"], importance: "⭐" },
+            { name: "Rook", categories: ["Pvp"], importance: "🍁" },
+            { name: "Nia", categories: ["Pvp"], importance: "🍁" },
+            { name: "Ballista", categories: ["Pvp"], importance: "🍁" },
+            { name: "Jane", categories: ["DG"], importance: "⭐" },
+            { name: "May", categories: ["CR"], importance: "⭐" },
+            { name: "Yuri", categories: ["Raid", "DG"], importance: "🍁" },
+            { name: "Catty", categories: ["DG"], importance: "🍂" },
+            { name: "Sylvia", categories: [], importance: "🍂" },
+            { name: "Bane", categories: [], importance: "🍂" },
+            { name: "Hellenia", categories: [], importance: "🍂" },
+            { name: "Sarah", categories: [], importance: "🍂" },
+            { name: "Rahkun", categories: [], importance: "🍂" },
+            { name: "Hokin", categories: [], importance: "🍂" },
+            { name: "Yushin", categories: ["Adv", "Pvp"], importance: "⭐" },
+            { name: "Rin", categories: ["Adv", "Pvp"], importance: "⭐" },
+            { name: "Ruri", categories: ["CR"], importance: "🔥" },
+            { name: "Aragon", categories: [], importance: "🍁" },
+            { name: "Alice", categories: [], importance: "🍁" },
+            { name: "Colt", categories: ["Pvp"], importance: "⭐" },
+            { name: "Bi dam", categories: ["DG"], importance: "🔥" },
+            { name: "Daisy", categories: ["Raid"], importance: "⭐" },
+            { name: "Miho", categories: [], importance: "🍁" },
+            { name: "Platin", categories: ["Pvp"], importance: "⭐" },
+            { name: "Velika", categories: ["Adv", "DG"], importance: "🍁" },
+            { name: "Chancellor", categories: ["Pvp"], importance: "🍁" },
+            { name: "Orly", categories: ["Pvp"], importance: "⭐" },
+            { name: "Melcure", categories: ["Pvp"], importance: "⭐" },
+            { name: "Klahan", categories: [], importance: "🍂" },
+            { name: "Fai", categories: [], importance: "🔥" },
+            { name: "Rosie", categories: [], importance: "🔥" },
+            { name: "Juri", categories: [], importance: "🔥" },
         ];
-        
-        // Mendapatkan elemen DOM
+
+        let currentCategoryFilter = "All";
+        let currentImportanceFilter = "All";
+
         const heroListContainer = document.getElementById('hero-list');
-        const importanceFilters = document.getElementById('importance-filters');
-        const categoryFilters = document.getElementById('category-filters');
-        let currentImportanceFilter = null;
-        let currentCategoryFilter = null;
+        const categoryFilterContainer = document.getElementById('category-filters');
+        const importanceFilterContainer = document.getElementById('importance-filters');
 
         // Fungsi untuk merender daftar hero
-        function renderHeroList() {
-            heroListContainer.innerHTML = '';
+        const renderHeroes = () => {
             const filteredHeroes = heroes.filter(hero => {
-                const isImportanceMatch = currentImportanceFilter === null || hero.importance.includes(currentImportanceFilter);
-                const isCategoryMatch = currentCategoryFilter === null || hero.categories.includes(currentCategoryFilter) || hero.categories.includes('All content');
-                return isImportanceMatch && isCategoryMatch;
+                const passesCategoryFilter = currentCategoryFilter === "All" || hero.categories.some(cat => cat.toUpperCase() === currentCategoryFilter.toUpperCase());
+                const passesImportanceFilter = currentImportanceFilter === "All" || hero.importance === currentImportanceFilter;
+                return passesCategoryFilter && passesImportanceFilter;
             });
 
+            heroListContainer.innerHTML = '';
+            
+            // Tampilkan pesan jika tidak ada hero yang ditemukan
             if (filteredHeroes.length === 0) {
-                heroListContainer.innerHTML = `<p class="text-center text-gray-500 col-span-full mt-8">Tidak ada pahlawan yang ditemukan.</p>`;
-            } else {
-                filteredHeroes.forEach(hero => {
-                    const card = document.createElement('div');
-                    card.classList.add('bg-gray-800', 'p-6', 'rounded-xl', 'shadow-lg', 'border', 'border-gray-700', 'transition-transform', 'transform', 'hover:scale-105');
-
-                    const importanceIcons = hero.importance.join(' ');
-                    const categories = hero.categories.length > 0 ? hero.categories.join(', ') : 'Tidak ada kategori';
-
-                    card.innerHTML = `
-                        <h2 class="text-xl font-bold text-white mb-2">${hero.name}</h2>
-                        <p class="text-sm text-gray-400 mb-4">Kategori: <span class="text-gray-200">${categories}</span></p>
-                        <div class="flex items-center">
-                            <span class="text-xl">${importanceIcons}</span>
-                        </div>
-                    `;
-                    heroListContainer.appendChild(card);
-                });
+                heroListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full mt-8">Tidak ada hero yang ditemukan dengan filter ini.</p>';
             }
-        }
 
-        // Event listener untuk tombol filter kepentingan
-        importanceFilters.addEventListener('click', (e) => {
-            const targetId = e.target.id;
-            document.querySelectorAll('#importance-filters .button').forEach(btn => btn.classList.remove('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900'));
-            e.target.classList.add('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900');
+            filteredHeroes.forEach(hero => {
+                const categoriesHtml = hero.categories.map(cat => `<span class="bg-gray-200 text-gray-700 text-xs font-semibold px-2 py-1 rounded-full">${cat.toUpperCase()}</span>`).join('');
+                
+                const heroCard = `
+                    <div class="bg-white rounded-lg shadow-md p-4 flex flex-col items-center text-center transition-transform duration-200 hover:scale-105">
+                        <div class="text-3xl mb-2">${hero.importance}</div>
+                        <h3 class="font-bold text-lg sm:text-xl text-gray-800">${hero.name}</h3>
+                        <div class="flex flex-wrap justify-center gap-1 mt-2">
+                            ${categoriesHtml}
+                        </div>
+                    </div>
+                `;
+                heroListContainer.innerHTML += heroCard;
+            });
+        };
 
-            if (targetId === 'all-importance-btn') currentImportanceFilter = null;
-            else if (targetId === 'fire-btn') currentImportanceFilter = '🔥';
-            else if (targetId === 'star-btn') currentImportanceFilter = '⭐';
-            else if (targetId === 'leaf-btn') currentImportanceFilter = '🍁';
-            else if (targetId === 'withered-leaf-btn') currentImportanceFilter = '🍂';
-            renderHeroList();
+        // Fungsi untuk menangani klik filter
+        const handleFilterClick = (event) => {
+            const btn = event.target;
+            const filterType = btn.parentElement.id;
+            const filterValue = btn.dataset.filter;
+
+            // Logika untuk men-toggle filter
+            if (filterType === 'category-filters') {
+                if (currentCategoryFilter === filterValue) {
+                    currentCategoryFilter = "All";
+                } else {
+                    currentCategoryFilter = filterValue;
+                }
+            } else if (filterType === 'importance-filters') {
+                if (currentImportanceFilter === filterValue) {
+                    currentImportanceFilter = "All";
+                } else {
+                    currentImportanceFilter = filterValue;
+                }
+            }
+
+            // Memperbarui tampilan tombol yang aktif
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+                button.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+            });
+            
+            // Menandai tombol kategori yang aktif
+            document.querySelectorAll('#category-filters .filter-btn').forEach(button => {
+                if (button.dataset.filter === currentCategoryFilter) {
+                    button.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+                    button.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                }
+            });
+
+            // Menandai tombol kepentingan yang aktif
+            document.querySelectorAll('#importance-filters .filter-btn').forEach(button => {
+                if (button.dataset.filter === currentImportanceFilter) {
+                    button.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+                    button.classList.remove('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                }
+            });
+
+            // Merender ulang hero setelah filter diperbarui
+            renderHeroes();
+        };
+
+        // Menambahkan event listener ke semua tombol filter
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', handleFilterClick);
         });
 
-        // Event listener untuk tombol filter kategori
-        categoryFilters.addEventListener('click', (e) => {
-            const targetId = e.target.id;
-            document.querySelectorAll('#category-filters .button').forEach(btn => btn.classList.remove('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900'));
-            e.target.classList.add('active', 'ring-4', 'ring-offset-2', 'ring-offset-gray-900');
-
-            if (targetId === 'all-category-btn') currentCategoryFilter = null;
-            else if (targetId === 'adv-btn') currentCategoryFilter = 'Adv';
-            else if (targetId === 'pvp-btn') currentCategoryFilter = 'pvp';
-            else if (targetId === 'dg-btn') currentCategoryFilter = 'DG';
-            else if (targetId === 'cr-btn') currentCategoryFilter = 'CR';
-            else if (targetId === 'raid-btn') currentCategoryFilter = 'Raid';
-            renderHeroList();
-        });
-        
-        // Render daftar hero saat halaman dimuat
-        renderHeroList();
+        // Panggil renderHeroes() saat halaman dimuat untuk menampilkan semua hero
+        renderHeroes();
     </script>
 </body>
 </html>
